@@ -10,28 +10,40 @@ class FeeStatusPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: 16), // Move 'Fee Status' slightly down
-            Text(
-              'Fee Status',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 8), // Make 'Fee Status' and 'Class 8' closer
+            SizedBox(height: 20), // Move container slightly down
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              width: double.infinity, // Full width container
+              padding: EdgeInsets.symmetric(vertical: 16), // Vertical padding
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.black, width: 1.5),
+                color: Colors.blueGrey[100], // Background color
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Text(
-                'Class: 8',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.bold,
-                ),
+              child: Column(
+                children: [
+                  Text(
+                    'Fee Status',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black, width: 1.5),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      'Class: 8',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(height: 24),
@@ -42,57 +54,62 @@ class FeeStatusPage extends StatelessWidget {
                     term: 'Term 1',
                     fee: 40000,
                     percentagePaid: 0.5,
-                    endDate: '2025-03-31',
+                    endDate: '31-03-2025',
                     status: 'Completed',
                   ),
                   FeeCard(
                     term: 'Term 2',
                     fee: 25000,
                     percentagePaid: 0.3,
-                    endDate: '2025-06-30',
+                    endDate: '30-06-2025',
                     status: 'Pending',
                   ),
                   FeeCard(
                     term: 'Term 3',
                     fee: 20000,
                     percentagePaid: 0.2,
-                    endDate: '2025-09-30',
+                    endDate: '30-09-2025',
                     status: 'Over Due',
                   ),
                   FeeCard(
                     term: 'Exam Fee',
                     fee: 5000,
                     percentagePaid: 1.0,
-                    endDate: '2025-10-15',
+                    endDate: '15-10-2025',
                     status: 'Pending',
                   ),
                   FeeCard(
                     term: 'Bus Fee',
                     fee: 20000,
                     percentagePaid: 1.0,
-                    endDate: '2025-10-15',
+                    endDate: '15-10-2025',
                     status: 'Completed',
                   ),
+                  // Add a small space after the last card
+                  SizedBox(height: 16),
+                  Container(
+                    width: 100,  // Set the desired width here
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Handle Fee Due action
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                        backgroundColor: Colors.blueGrey,
+                      ),
+                      child: Text(
+                        'Proceed to Pay',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          height: 1.3,
+                        ),
+                      ),
+                    ),
+                  ),
+
                 ],
-              ),
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                // Handle Fee Due action
-              },
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                backgroundColor: Colors.blueGrey,
-              ),
-              child: Text(
-                'Proceed to Pay',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  height: 1.3,
-                ),
               ),
             ),
           ],
@@ -101,6 +118,8 @@ class FeeStatusPage extends StatelessWidget {
     );
   }
 }
+
+
 
 class FeeCard extends StatelessWidget {
   final String term;
@@ -235,6 +254,3 @@ class FeeCard extends StatelessWidget {
     );
   }
 }
-
-
-
