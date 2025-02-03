@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'payment.dart';
 
 class FeeStatusPage extends StatelessWidget {
   @override
@@ -85,13 +86,23 @@ class FeeStatusPage extends StatelessWidget {
                     endDate: '15-10-2025',
                     status: 'Completed',
                   ),
-                  // Add a small space after the last card
                   SizedBox(height: 16),
                   Container(
-                    width: 100,  // Set the desired width here
+                    width: 100,
                     child: ElevatedButton(
                       onPressed: () {
-                        // Handle Fee Due action
+                        // Navigate to PaymentPage when "Proceed to Pay" is clicked
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PaymentPage(
+                              term: 'All Terms',  // You can adjust this dynamically as needed
+                              fee: 50000,      // Adjust the fee dynamically
+                              endDate: '30-06-2025',  // Adjust the end date dynamically
+                              status: 'Pending', // Adjust the status dynamically
+                            ),
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
@@ -107,7 +118,7 @@ class FeeStatusPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                  ),
+                  )
 
                 ],
               ),
@@ -118,8 +129,6 @@ class FeeStatusPage extends StatelessWidget {
     );
   }
 }
-
-
 
 class FeeCard extends StatelessWidget {
   final String term;
@@ -155,99 +164,118 @@ class FeeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      elevation: 0,
-      margin: EdgeInsets.only(bottom: 16),
-      child: Container(
-        decoration: BoxDecoration(
-          color: _getBackgroundColor(),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Color(0xFFD1D9E6).withOpacity(1),
-              blurRadius: 30,
-              offset: Offset(18, 18),
+    bool isClickable = status != 'Completed'; // Only clickable if not "Completed"
+
+    return GestureDetector(
+      onTap: isClickable
+          ? () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PaymentPage(
+              term: term,
+              fee: fee,
+              endDate: endDate,
+              status: status,
             ),
-          ],
+          ),
+        );
+      }
+          : null, // No action if "Completed"
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Stack(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        term,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: _getTextColor(),
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'Fee: ₹$fee',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: _getTextColor(),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'End Date: $endDate',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: _getTextColor(),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: status == 'Completed' ? Colors.white : Colors.black,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      status,
-                      style: TextStyle(
-                        color: status == 'Completed' ? Colors.green : Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Positioned(
-                bottom: 0,
-                right: 15,
-                child: CircularPercentIndicator(
-                  radius: 22.5,
-                  lineWidth: 4.0,
-                  percent: percentagePaid,
-                  center: Text(
-                    '${(percentagePaid * 100).toInt()}%',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                      color: Colors.white,
-                    ),
-                  ),
-                  progressColor: Colors.white,
-                  backgroundColor: Colors.black26,
-                ),
+        elevation: 0,
+        margin: EdgeInsets.only(bottom: 16),
+        child: Container(
+          decoration: BoxDecoration(
+            color: _getBackgroundColor(),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Color(0xFFD1D9E6).withOpacity(1),
+                blurRadius: 30,
+                offset: Offset(18, 18),
               ),
             ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Stack(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          term,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: _getTextColor(),
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Fee: ₹$fee',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: _getTextColor(),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'End Date: $endDate',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: _getTextColor(),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: status == 'Completed' ? Colors.white : Colors.black,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        status,
+                        style: TextStyle(
+                          color: status == 'Completed' ? Colors.green : Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 15,
+                  child: CircularPercentIndicator(
+                    radius: 22.5,
+                    lineWidth: 4.0,
+                    percent: percentagePaid,
+                    center: Text(
+                      '${(percentagePaid * 100).toInt()}%',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        color: Colors.white,
+                      ),
+                    ),
+                    progressColor: Colors.white,
+                    backgroundColor: Colors.black26,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
