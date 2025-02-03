@@ -11,12 +11,12 @@ class FeeStatusPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: 20), // Move container slightly down
+            SizedBox(height: 20),
             Container(
-              width: double.infinity, // Full width container
-              padding: EdgeInsets.symmetric(vertical: 16), // Vertical padding
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: Colors.blueGrey[100], // Background color
+                color: Colors.blueGrey[100],
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
@@ -91,15 +91,14 @@ class FeeStatusPage extends StatelessWidget {
                     width: 100,
                     child: ElevatedButton(
                       onPressed: () {
-                        // Navigate to PaymentPage when "Proceed to Pay" is clicked
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => PaymentPage(
-                              term: 'All Terms',  // You can adjust this dynamically as needed
-                              fee: 50000,      // Adjust the fee dynamically
-                              endDate: '30-06-2025',  // Adjust the end date dynamically
-                              status: 'Pending', // Adjust the status dynamically
+                              term: 'All Terms',
+                              fee: 50000,
+                              endDate: '30-06-2025',
+                              status: 'Pending',
                             ),
                           ),
                         );
@@ -109,7 +108,7 @@ class FeeStatusPage extends StatelessWidget {
                         backgroundColor: Colors.blueGrey,
                       ),
                       child: Text(
-                        'Proceed to Pay',
+                        'Continue',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -119,7 +118,6 @@ class FeeStatusPage extends StatelessWidget {
                       ),
                     ),
                   )
-
                 ],
               ),
             ),
@@ -130,7 +128,7 @@ class FeeStatusPage extends StatelessWidget {
   }
 }
 
-class FeeCard extends StatelessWidget {
+class FeeCard extends StatefulWidget {
   final String term;
   final int fee;
   final double percentagePaid;
@@ -145,8 +143,21 @@ class FeeCard extends StatelessWidget {
     required this.status,
   });
 
+  @override
+  _FeeCardState createState() => _FeeCardState();
+}
+
+class _FeeCardState extends State<FeeCard> {
+  bool isSelected = false;
+
+  void toggleSelection() {
+    setState(() {
+      isSelected = !isSelected;
+    });
+  }
+
   Color _getBackgroundColor() {
-    switch (status) {
+    switch (widget.status) {
       case 'Pending':
         return Colors.orangeAccent;
       case 'Completed':
@@ -159,12 +170,12 @@ class FeeCard extends StatelessWidget {
   }
 
   Color _getTextColor() {
-    return status == 'Completed' ? Colors.white : Colors.black;
+    return widget.status == 'Completed' ? Colors.white : Colors.black;
   }
 
   @override
   Widget build(BuildContext context) {
-    bool isClickable = status != 'Completed'; // Only clickable if not "Completed"
+    bool isClickable = widget.status != 'Completed';
 
     return GestureDetector(
       onTap: isClickable
@@ -173,15 +184,15 @@ class FeeCard extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => PaymentPage(
-              term: term,
-              fee: fee,
-              endDate: endDate,
-              status: status,
+              term: widget.term,
+              fee: widget.fee,
+              endDate: widget.endDate,
+              status: widget.status,
             ),
           ),
         );
       }
-          : null, // No action if "Completed"
+          : null,
       child: Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -201,8 +212,8 @@ class FeeCard extends StatelessWidget {
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Stack(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -212,7 +223,7 @@ class FeeCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          term,
+                          widget.term,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -221,7 +232,7 @@ class FeeCard extends StatelessWidget {
                         ),
                         SizedBox(height: 8),
                         Text(
-                          'Fee: ₹$fee',
+                          'Fee: ₹${widget.fee}',
                           style: TextStyle(
                             fontSize: 16,
                             color: _getTextColor(),
@@ -230,7 +241,7 @@ class FeeCard extends StatelessWidget {
                         ),
                         SizedBox(height: 8),
                         Text(
-                          'End Date: $endDate',
+                          'End Date: ${widget.endDate}',
                           style: TextStyle(
                             fontSize: 16,
                             color: _getTextColor(),
@@ -239,45 +250,75 @@ class FeeCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: status == 'Completed' ? Colors.white : Colors.black,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        status,
-                        style: TextStyle(
-                          color: status == 'Completed' ? Colors.green : Colors.white,
-                          fontWeight: FontWeight.bold,
+                    // Status Badge and Percentage Indicator
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: widget.status == 'Completed' ? Colors.white : Colors.black,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            widget.status,
+                            style: TextStyle(
+                              color: widget.status == 'Completed' ? Colors.green : Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                      ),
+                        SizedBox(height: 8),
+                        CircularPercentIndicator(
+                          radius: 22.5,
+                          lineWidth: 4.0,
+                          percent: widget.percentagePaid,
+                          center: Text(
+                            '${(widget.percentagePaid * 100).toInt()}%',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                              color: Colors.white,
+                            ),
+                          ),
+                          progressColor: Colors.white,
+                          backgroundColor: Colors.black26,
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                Positioned(
-                  bottom: 0,
-                  right: 15,
-                  child: CircularPercentIndicator(
-                    radius: 22.5,
-                    lineWidth: 4.0,
-                    percent: percentagePaid,
-                    center: Text(
-                      '${(percentagePaid * 100).toInt()}%',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                        color: Colors.white,
+                // Add/Remove button
+                // Add/Remove button
+                if (widget.status == 'Pending' || widget.status == 'Over Due')
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        SizedBox(
+                          width: 250,
+                          height: 37,
+                          child: ElevatedButton(
+                          onPressed: toggleSelection,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                              isSelected ? Colors.white : Colors.green,
+                            padding: EdgeInsets.zero,elevation: 0, // Add some vertical padding
+                          ),
+                          child: Text(
+                            isSelected ? 'Remove' : 'Add',
+                            style: TextStyle(fontSize: 16), // Adjust text size if needed
+                        ),
                       ),
                     ),
-                    progressColor: Colors.white,
-                    backgroundColor: Colors.black26,
+                    ]
                   ),
                 ),
               ],
-            ),
           ),
         ),
+      ),
       ),
     );
   }
