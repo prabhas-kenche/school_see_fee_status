@@ -1,3 +1,4 @@
+// main.dart
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'payment.dart';
@@ -176,6 +177,7 @@ class _FeeCardState extends State<FeeCard> {
   @override
   Widget build(BuildContext context) {
     bool isClickable = widget.status != 'Completed';
+    Color cardColor = _getBackgroundColor();
 
     return GestureDetector(
       onTap: isClickable
@@ -201,7 +203,7 @@ class _FeeCardState extends State<FeeCard> {
         margin: EdgeInsets.only(bottom: 16),
         child: Container(
           decoration: BoxDecoration(
-            color: _getBackgroundColor(),
+            color: cardColor,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
@@ -250,7 +252,6 @@ class _FeeCardState extends State<FeeCard> {
                         ),
                       ],
                     ),
-                    // Status Badge and Percentage Indicator
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -288,37 +289,30 @@ class _FeeCardState extends State<FeeCard> {
                     ),
                   ],
                 ),
-                // Add/Remove button
-                // Add/Remove button
                 if (widget.status == 'Pending' || widget.status == 'Over Due')
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        SizedBox(
-                          width: 250,
-                          height: 37,
-                          child: ElevatedButton(
-                          onPressed: toggleSelection,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                              isSelected ? Colors.white : Colors.green,
-                            padding: EdgeInsets.zero,elevation: 0, // Add some vertical padding
-                          ),
-                          child: Text(
-                            isSelected ? 'Remove' : 'Add',
-                            style: TextStyle(fontSize: 16), // Adjust text size if needed
+                    child: SizedBox(
+                      width: 250,
+                      height: 37,
+                      child: ElevatedButton(
+                        onPressed: toggleSelection,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: cardColor,// Matches card color for both Add and Remove
+                          side: BorderSide(color: Colors.black, width: 0.7), // Black outline
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          isSelected ? 'Remove' : 'Add',
+                          style: TextStyle(fontSize: 16, color: Colors.black),
                         ),
                       ),
                     ),
-                    ]
                   ),
-                ),
               ],
+            ),
           ),
         ),
-      ),
       ),
     );
   }
