@@ -289,28 +289,36 @@ class _FeeCardState extends State<FeeCard> {
                     ),
                   ],
                 ),
-                if (widget.status == 'Pending' || widget.status == 'Over Due')
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: SizedBox(
-                      width: 250,
-                      height: 37,
-                      child: ElevatedButton(
-                        onPressed: toggleSelection,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: cardColor,// Matches card color for both Add and Remove
-                          side: BorderSide(color: Colors.black, width: 0.7), // Black outline
-                          elevation: 0,
-                        ),
-                        child: Text(
-                          isSelected ? 'Remove' : 'Add',
-                          style: TextStyle(fontSize: 16, color: Colors.black),
+              if (widget.status == 'Pending' || widget.status == 'Over Due')
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end, // Align to the right
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: SizedBox(
+                          width: 85, // Reduced width
+                          child: ElevatedButton(
+                            onPressed: toggleSelection,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: cardColor,
+                              side: BorderSide(color: Colors.black, width: 0.7),
+                              elevation: 0,
+                            ),
+                            child: Text(
+                              isSelected ? 'Remove' : 'Add',
+                              style: TextStyle(fontSize: 10, color: Colors.black),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
-              ],
+                ),
+            ],
             ),
+
           ),
         ),
       ),
