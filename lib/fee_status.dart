@@ -308,7 +308,7 @@ class _FeeCardState extends State<FeeCard> {
                             ),
                             child: Text(
                               isSelected ? 'Remove' : 'Add',
-                              style: TextStyle(fontSize: 10, color: Colors.black),
+                              style: TextStyle(fontSize: 9, color: Colors.black),
                             ),
                           ),
                         ),
