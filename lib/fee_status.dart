@@ -51,6 +51,15 @@ class FeeStatusPage extends StatelessWidget {
             Expanded(
               child: ListView(
                 children: [
+                  // New FeeCard Added Here
+                  FeeCard(
+                    term: 'All Terms',
+                    fee: 'Total Fee',
+                    percentagePaid: 1.0, // 100% completed
+                    startDate: '10-03-2025', // New Field
+                    endDate: '30-09-2025',
+                    status: 'One Settlement',
+                  ),
                   FeeCard(
                     term: 'Term 1',
                     fee: 40000,
@@ -130,8 +139,9 @@ class FeeStatusPage extends StatelessWidget {
 
 class FeeCard extends StatefulWidget {
   final String term;
-  final int fee;
+  final dynamic fee; // Changed to dynamic to accept both int and string
   final double percentagePaid;
+  final String? startDate; // Added optional start date
   final String endDate;
   final String status;
 
@@ -139,6 +149,7 @@ class FeeCard extends StatefulWidget {
     required this.term,
     required this.fee,
     required this.percentagePaid,
+    this.startDate, // Optional, only for new FeeCard
     required this.endDate,
     required this.status,
   });
@@ -159,6 +170,7 @@ class _FeeCardState extends State<FeeCard> {
   Color _getBackgroundColor() {
     switch (widget.status) {
       case 'Pending':
+      case 'One Time Settlement':
         return Colors.orangeAccent;
       case 'Completed':
         return Colors.green;
@@ -176,6 +188,13 @@ class _FeeCardState extends State<FeeCard> {
   @override
   Widget build(BuildContext context) {
     bool isClickable = widget.status != 'Completed';
+    Color cardColor = _getBackgroundColor();
+    bool isAllTermsCard = widget.term == 'All Terms';
+    bool isCompletedCard = widget.status == 'Completed';
+    dynamic displayFee = widget.fee;
+    if (isAllTermsCard) {
+      displayFee = 85000;
+    }
 
     return GestureDetector(
       onTap: isClickable
@@ -185,7 +204,7 @@ class _FeeCardState extends State<FeeCard> {
           MaterialPageRoute(
             builder: (context) => PaymentPage(
               term: widget.term,
-              fee: widget.fee,
+              fee: widget.fee is int ? widget.fee : 0,
               endDate: widget.endDate,
               status: widget.status,
             ),
@@ -201,7 +220,7 @@ class _FeeCardState extends State<FeeCard> {
         margin: EdgeInsets.only(bottom: 16),
         child: Container(
           decoration: BoxDecoration(
-            color: _getBackgroundColor(),
+            color: cardColor,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
@@ -216,7 +235,6 @@ class _FeeCardState extends State<FeeCard> {
             child: Column(
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Column(
@@ -230,16 +248,28 @@ class _FeeCardState extends State<FeeCard> {
                             color: _getTextColor(),
                           ),
                         ),
-                        SizedBox(height: 8),
+                        SizedBox(height: 12),
                         Text(
-                          'Fee: ₹${widget.fee}',
+                          isAllTermsCard
+                              ? 'Total Fee: ₹$displayFee'
+                              : 'Fee: ${widget.fee is int ? '₹' : ''}${widget.fee}',
                           style: TextStyle(
                             fontSize: 16,
                             color: _getTextColor(),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 8),
+                        SizedBox(height: 8), // Added SizedBox for spacing
+                        if (widget.startDate != null) // Display Start Date if available
+                          Text(
+                            'Start Date: ${widget.startDate}',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: _getTextColor(),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        SizedBox(height: 6), // Added SizedBox for spacing
                         Text(
                           'End Date: ${widget.endDate}',
                           style: TextStyle(
@@ -250,75 +280,147 @@ class _FeeCardState extends State<FeeCard> {
                         ),
                       ],
                     ),
-                    // Status Badge and Percentage Indicator
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: widget.status == 'Completed' ? Colors.white : Colors.black,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            widget.status,
-                            style: TextStyle(
-                              color: widget.status == 'Completed' ? Colors.green : Colors.white,
-                              fontWeight: FontWeight.bold,
+                    Spacer(),
+                    if (isAllTermsCard)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: widget.status == 'Completed' ? Colors.white : Colors.black,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              widget.status == 'One Settlement' ? 'One Time Settlement' : widget.status,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: widget.status == 'Completed' ? Colors.green : Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                        ),
-                        SizedBox(height: 8),
-                        CircularPercentIndicator(
-                          radius: 22.5,
-                          lineWidth: 4.0,
-                          percent: widget.percentagePaid,
-                          center: Text(
-                            '${(widget.percentagePaid * 100).toInt()}%',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                              color: Colors.white,
+                          SizedBox(height: 8),
+                          Transform.translate(
+                            offset: Offset(-22, 0), // Shift 22 pixels to the left
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: CircularPercentIndicator(
+                                radius: 22.5,
+                                lineWidth: 4.0,
+                                percent: widget.percentagePaid,
+                                center: Text(
+                                  '${(widget.percentagePaid * 100).toInt()}%',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                progressColor: Colors.white,
+                                backgroundColor: Colors.black26,
+                              ),
                             ),
                           ),
-                          progressColor: Colors.white,
-                          backgroundColor: Colors.black26,
-                        ),
-                      ],
-                    ),
+                          if (widget.status == 'Pending' ||
+                              widget.status == 'Over Due' ||
+                              widget.status == 'One Time Settlement' ||
+                              isAllTermsCard)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: SizedBox(
+                                width: 89,
+                                child: ElevatedButton(
+                                  onPressed: toggleSelection,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: cardColor,
+                                    side: BorderSide(color: Colors.black, width: 1.5),
+                                    elevation: 0,
+                                  ),
+                                  child: Text(
+                                    isSelected ? 'Remove' : 'Add',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      )
+                    else
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: widget.status == 'Completed' ? Colors.white : Colors.black,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              widget.status == 'One Settlement' ? 'One Time Settlement' : widget.status,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: widget.status == 'Completed' ? Colors.green : Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Transform.translate(
+                            offset: isCompletedCard ? Offset(3, 0) : Offset(0, 0),
+                            child: CircularPercentIndicator(
+                              radius: 22.5,
+                              lineWidth: 4.0,
+                              percent: widget.percentagePaid,
+                              center: Text(
+                                '${(widget.percentagePaid * 100).toInt()}%',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              progressColor: Colors.white,
+                              backgroundColor: Colors.black26,
+                            ),
+                          ),
+                          if (widget.status == 'Pending' ||
+                              widget.status == 'Over Due' ||
+                              widget.status == 'One Time Settlement')
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: SizedBox(
+                                width: 89,
+                                child: ElevatedButton(
+                                  onPressed: toggleSelection,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: cardColor,
+                                    side: BorderSide(color: Colors.black, width: 1.5),
+                                    elevation: 0,
+                                  ),
+                                  child: Text(
+                                    isSelected ? 'Remove' : 'Add',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                   ],
                 ),
-                // Add/Remove button
-                // Add/Remove button
-                if (widget.status == 'Pending' || widget.status == 'Over Due')
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        SizedBox(
-                          width: 250,
-                          height: 37,
-                          child: ElevatedButton(
-                          onPressed: toggleSelection,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                              isSelected ? Colors.white : Colors.green,
-                            padding: EdgeInsets.zero,elevation: 0, // Add some vertical padding
-                          ),
-                          child: Text(
-                            isSelected ? 'Remove' : 'Add',
-                            style: TextStyle(fontSize: 16), // Adjust text size if needed
-                        ),
-                      ),
-                    ),
-                    ]
-                  ),
-                ),
               ],
+            ),
           ),
         ),
-      ),
       ),
     );
   }
